@@ -28,6 +28,7 @@ public void setup() {
 public void draw() {  
   background(bg);  
   translate(width/2 - xchange, height/2 - ychange);
+  rotate(rotateDegree*TWO_PI/360);
 
   if (mode == "move") {
     imgMove();
@@ -45,12 +46,12 @@ void mouseClicked() {
 }
 
 void imgRotate () {
-  rotate(rotateDegree*TWO_PI/360);
-  if (rotateDegree >= 360){
+  rotateDegree += rotateSpeed;
+
+  if (rotateDegree >= 360) {
     mode = "move";
     rotateDegree = 0;
   }
-  rotateDegree += rotateSpeed;
 }
 
 void imgMove () {
@@ -77,6 +78,5 @@ void imgMove () {
 
     movingLeft = !movingLeft;
   }
-  rotate(rotateDegree*TWO_PI/360);
 }
 
