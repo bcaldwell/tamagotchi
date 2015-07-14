@@ -8,8 +8,8 @@ int xchange = 0;
 boolean movingUp = true;
 boolean movingLeft = true;
 
-int ychangeSpeed = 12;
-int xchangeSpeed = 6;
+int ychangeSpeed = 3;
+int xchangeSpeed = 4;
 
 public void setup() {
   size (1152, 504);
@@ -31,15 +31,23 @@ public void draw() {
   }
   if (ychange >= 75) {
     movingUp = false;
-  } else if (ychange =< 0) {
+  } else if (ychange <= 0) {
     movingUp = true;
-    movingLeft = boolean(int(random(0,100)%2));
+    movingLeft = boolean(int(random(0, 100)%2));
   }
 
   if (movingLeft) {
     xchange+= xchangeSpeed;
   } else {
     xchange-= xchangeSpeed;
+  }
+
+  if (abs(xchange) >= (width - normal.width)/2) {
+
+    movingLeft = !movingLeft;
+    
+    
+    
   }
 }
 
