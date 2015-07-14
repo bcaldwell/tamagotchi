@@ -10,21 +10,50 @@ boolean movingLeft = true;
 
 int ychangeSpeed = 3;
 int xchangeSpeed = 4;
-int counter = 0;
+int rotateSpeed = 5;
+
+String mode = "move";
+
+int rotateDegree = 0;
 
 public void setup() {
   size (1152, 504);
   bg = loadImage("../background.jpg");
   normal = loadImage("../normal_face.png");
-  normal.resize(normal.width/imageScale, normal.height/imageScale);å  
+  normal.resize(normal.width/imageScale, normal.height/imageScale);
+  imageMode(CENTER);
 }
 
 
 public void draw() {  
-  imageMode(CENTER);
-  background(bg);
-  image(normal, width/2 - xchange, height/2 - ychange);
+  background(bg);  
+  translate(width/2 - xchange, height/2 - ychange);
 
+  if (mode == "move") {
+    imgMove();
+  } else if (mode == "rotate") {
+    imgRotate();
+  }
+
+  image(normal, 0, 0);
+}
+
+void mouseClicked() {
+  if (mode == "move") {
+    mode = "rotate";
+  }
+}
+
+void imgRotate () {
+  rotate(rotateDegree*TWO_PI/360);
+  if (rotateDegree >= 360){
+    mode = "move";
+    rotateDegree = 0;
+  }
+  rotateDegree += rotateSpeed;
+}
+
+void imgMove () {
   //determine y position
   if (movingUp) {
     ychange+= ychangeSpeed;
@@ -48,15 +77,6 @@ public void draw() {
 
     movingLeft = !movingLeft;
   }
-
-
+  rotate(rotateDegree*TWO_PI/360);
 }
 
-public void spin(PImage image) {
-  for (int counter = 0; counter < 360; counter++) {
-    translate(width/2-normal.width/2, height/2-normal.height/2);
-    rotate(counter*TWO_PI/360);
-    translate(-normal.width/2, -normal.height/2);
-    image(image, width/2 - xchange, height/2 - ychange);
-  }
-}
