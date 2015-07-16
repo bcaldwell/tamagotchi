@@ -2,6 +2,7 @@ import processing.serial.*;
 
 PImage bg;
 PImage normal;
+
 int imageScale = 4;
 int ychange = 0;
 int xchange = 0;
@@ -17,8 +18,8 @@ String mode = "move";
 int rotateDegree = 0;
 
 public void setup() {
-  size (1152, 504);
-  bg = loadImage("../background.jpg");
+  size (800, 800);
+  bg = loadImage("../background.png");
   normal = loadImage("../normal_face.png");
   normal.resize(normal.width/imageScale, normal.height/imageScale);
   imageMode(CENTER);
@@ -34,6 +35,8 @@ public void draw() {
     imgMove();
   } else if (mode == "rotate") {
     imgRotate();
+  } else if (mode == "jumpGame") {
+    jumpingGame();
   }
 
   image(normal, 0, 0);
@@ -78,5 +81,12 @@ void imgMove () {
 
     movingLeft = !movingLeft;
   }
+}
+
+void jumpingGame() {
+  rectMode(CENTER);
+  noFill();
+  strokeWeight(20);
+  rect(0, 0, 200, 0);
 }
 
