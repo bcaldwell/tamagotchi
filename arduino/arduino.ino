@@ -1,39 +1,91 @@
-char val; // Data received from the serial port
-int ledPin = 13; // Set the pin to digital I/O 13
-boolean ledState = LOW; //to toggle our LED
+#include "tamagotchi.h"
 
-void setup() 
-{
-  pinMode(ledPin, OUTPUT); // Set pin as OUTPUT
-  //initialize serial communications at a 9600 baud rate
+//Pin connected to ST_CP of 74HC595
+int latchPin = 5;
+//Pin connected to SH_CP of 74HC595
+int clockPin = 7;
+////Pin connected to DS of 74HC595
+int dataPin = 6;
+
+volatile double timerOverflow = 0;  //tracks timer1 overflow count
+
+state hunger;
+state happiness;
+//button array:
+//0:left
+//1:middle
+//2:right
+button buttons[3];
+
+void setup() {
   Serial.begin(9600);
-  establishContact();  // send a byte to establish contact until receiver responds 
+  //set pins to output so you can control the shift register
+  pinMode(latchPin, OUTPUT);
+  pinMode(clockPin, OUTPUT);
+  pinMode(dataPin, OUTPUT);
+
+  pinMode(9, OUTPUT);
+  pinMode(10, OUTPUT);
+  pinMode(11, OUTPUT);
+
+  //add interupts on pins 2 and 3
+  attachInterrupt(0, buttonHandler3, CHANGE); // interrupt 0 is mapped to pin 2 on the Uno
+  attachInterrupt(1, buttonHandler1, CHANGE); // interrupt 1 is mapped to pin 3 on the Uno
+
+  cli();  //enables interput blocking flag
+  TCCR1A = 0;             // normal counting mode
+  TIMSK1 |= (1 << TOIE1); //enable timer overflow interput
+  TCCR1B = _BV(CS10);      // set prescale to 1
+  TCNT1 = 0;              // clear the timer count
+  Serial.begin(9600);
+  sei();  //removes flag that blocks interputs
 }
 
-void loop()
+void loop() {
+  
+  digitalWrite(9,HIGH);
+ 
+  
+  hunger.update(timer());
+  happiness.update(timer());
+  ledWrite();
+}
+
+void ledWrite() {
+  // take the latchPin low so
+  // the LEDs don't change while you're sending in bits:
+  digitalWrite(latchPin, LOW);
+  // shift out the bits:
+  int shiftAmount = (happiness.getWriteBits() << 4 ) + hunger.getWriteBits();
+  shiftOut(dataPin, clockPin, MSBFIRST, shiftAmount);
+  //take the latch pin high so the LEDs will light up:
+  digitalWrite(latchPin, HIGH);
+}
+
+//handles those interrupts
+void buttonHandler0(){
+  
+  
+  Serial.print("1st button pressed");
+
+  
+  buttons[0].toggle();
+}
+void buttonHandler1(){
+  buttons[1].toggle();
+}
+
+//functions for millis()
+unsigned long timer () {
+  return (TCNT1 + timerOverflow * 65536) / ( F_CPU / 1000L);
+}
+
+unsigned long timerSeconds () {
+  return (TCNT1 + timerOverflow * 65536) / ( F_CPU);
+}
+
+//timer1 overflow interput function
+ISR(TIMER1_OVF_vect)
 {
-  if (Serial.available() > 0) { // If data is available to read,
-    val = Serial.read(); // read it and store it in val
-
-    if(val == '1') //if we get a 1
-    {
-       ledState = !ledState; //flip the ledState
-       digitalWrite(ledPin, ledState);
-      Serial.println("Clicked!"); 
-    }
-    delay(100);
-  } 
-    else {
-    Serial.println("Hello, world!"); //send back a hello world
-    delay(50);
-    }
+  timerOverflow++;
 }
-
-void establishContact() {
-  while (Serial.available() <= 0) {
-  Serial.println("A");   // send a capital A
-  delay(300);
-  }
-}
-
-
