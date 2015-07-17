@@ -33,6 +33,11 @@ class state {
           lastUpdate = time;
       }
     }
+    void increaseState(){
+      if (writeBits < 0b1111) {
+        writeBits = writeBits << 1
+        }
+    }
 };
 
 class button {
