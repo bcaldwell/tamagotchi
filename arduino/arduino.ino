@@ -24,9 +24,13 @@ void setup() {
   pinMode(clockPin, OUTPUT);
   pinMode(dataPin, OUTPUT);
 
+  pinMode(9, OUTPUT);
+  pinMode(10, OUTPUT);
+  pinMode(11, OUTPUT);
+
   //add interupts on pins 2 and 3
   attachInterrupt(0, buttonHandler0, CHANGE); // interrupt 0 is mapped to pin 2 on the Uno
-  attachInterrupt(1, buttonHandler1, CHANGE); // interrupt 0 is mapped to pin 2 on the Uno
+  attachInterrupt(1, buttonHandler1, CHANGE); // interrupt 1 is mapped to pin 3 on the Uno
 
   cli();  //enables interput blocking flag
   TCCR1A = 0;             // normal counting mode
@@ -38,6 +42,10 @@ void setup() {
 }
 
 void loop() {
+  
+  digitalWrite(9,HIGH);
+ 
+  
   hunger.update(timer());
   happiness.update(timer());
   ledWrite();
@@ -56,6 +64,7 @@ void ledWrite() {
 
 //handles those interrupts
 void buttonHandler0(){
+  Serial.print("1st button pressed");
   buttons[0].toggle();
 }
 void buttonHandler1(){
