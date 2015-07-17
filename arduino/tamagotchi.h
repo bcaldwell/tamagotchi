@@ -44,12 +44,15 @@ class button {
       state = stateIn;
       changedState = true;
     }
-    boolean getState(){
-      changedState = false;
+    void toggle (){
+      this->update(!state);
+    }
+    boolean getState(boolean silent = false){
+      changedState = silent;
       return state;
     }
     boolean changed(){
       return changedState;
-    }  
+    }
 };
 

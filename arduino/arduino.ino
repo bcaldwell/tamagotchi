@@ -1,4 +1,4 @@
- #include "tamagotchi.h"
+#include "tamagotchi.h"
 
 //Pin connected to ST_CP of 74HC595
 int latchPin = 5;
@@ -11,6 +11,11 @@ volatile double timerOverflow = 0;  //tracks timer1 overflow count
 
 state hunger;
 state happiness;
+//button array:
+//0:left
+//1:middle
+//2:right
+button buttons[3];
 
 void setup() {
   Serial.begin(9600);
@@ -18,6 +23,10 @@ void setup() {
   pinMode(latchPin, OUTPUT);
   pinMode(clockPin, OUTPUT);
   pinMode(dataPin, OUTPUT);
+
+  //add interupts on pins 2 and 3
+  attachInterrupt(0, buttonHandler0, CHANGE); // interrupt 0 is mapped to pin 2 on the Uno
+  attachInterrupt(1, buttonHandler1, CHANGE); // interrupt 0 is mapped to pin 2 on the Uno
 
   cli();  //enables interput blocking flag
   TCCR1A = 0;             // normal counting mode
@@ -29,9 +38,9 @@ void setup() {
 }
 
 void loop() {
-    hunger.update(timer());
-    happiness.update(timer());
-    ledWrite();
+  hunger.update(timer());
+  happiness.update(timer());
+  ledWrite();
 }
 
 void ledWrite() {
@@ -43,6 +52,14 @@ void ledWrite() {
   shiftOut(dataPin, clockPin, MSBFIRST, shiftAmount);
   //take the latch pin high so the LEDs will light up:
   digitalWrite(latchPin, HIGH);
+}
+
+//handles those interrupts
+void buttonHandler0(){
+  buttons[0].toggle();
+}
+void buttonHandler1(){
+  buttons[1].toggle();
 }
 
 //functions for millis()
