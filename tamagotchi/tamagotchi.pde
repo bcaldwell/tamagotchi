@@ -1,5 +1,7 @@
 import processing.serial.*;
 
+Serial myPort;
+
 PImage bg;
 PImage normal;
 PImage steak;
@@ -18,7 +20,7 @@ int xchangeSpeed = 4;
 int rotateSpeed = 5;
 int eatSpeed = 3;
 
-String mode = "eating";
+String mode = "move";
 String faceState = "normal";
 
 int rotateDegree = 0;
@@ -34,6 +36,11 @@ public void setup() {
   steak = loadImage("../steak.gif");
   steak.resize(steak.width/2, steak.width/2);
   imageMode(CENTER);
+
+  //connect serial
+  println (Serial.list());
+  myPort = new Serial(this, Serial.list()[Serial.list().length - 2], 9600);
+  myPort.bufferUntil('\n');
 }
 
 
@@ -60,9 +67,9 @@ public void draw() {
 }
 
 void mouseClicked() {
-//  if (mode == "move") {
-//    mode = "eating";
-//  }
+  //  if (mode == "move") {
+  //    mode = "eating";
+  //  }
   if (faceState == "angry") {
     faceState = "normal";
   } else {
@@ -119,5 +126,40 @@ void jumpingGame() {
   noFill();
   strokeWeight(20);
   rect(0, 0, 200, 0);
+}
+
+String val = "";
+boolean firstContact = false;
+void serialEvent( Serial myPort) {
+  int button;
+  int state;
+  //put the incoming data into a String - 
+  //the '\n' is our end delimiter indicating the end of a complete packet
+  val = myPort.readStringUntil('\n');
+  //make sure our data isn't empty before continuing
+  if (val != null) {
+    //trim whitespace and formatting characters (like carriage return)
+    val = trim(val);
+
+    //look for our 'A' string to start the handshake
+    //if it's there, clear the buffer, and send a request for data
+    if (!firstContact) {
+      if (val.equals("A")) {
+        myPort.clear();
+        firstContact = true;
+        myPort.write("A");
+        println("contact");
+      }
+    } else { //if we've already established contact, keep getting and parsing data
+      println(val);
+      button = int(val.substring(0));
+      state = int(val.substring(2));
+      if (button == 0 && state == 1){
+         mode = "eating"; 
+      }
+      
+//      myPort.clear();
+    }
+  }
 }
 

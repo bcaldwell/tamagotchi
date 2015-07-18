@@ -20,6 +20,7 @@ button buttons[3];
 
 void setup() {
   Serial.begin(9600);
+
   //set pins to output so you can control the shift register
   pinMode(latchPin, OUTPUT);
   pinMode(clockPin, OUTPUT);
@@ -40,14 +41,32 @@ void setup() {
   TCNT1 = 0;              // clear the timer count
   Serial.begin(9600);
   sei();  //removes flag that blocks interputs
+
+  establishContact();
 }
 
+int val = 0;
+bool make1stButtonSerialCall = false;
+
 void loop() {
-  digitalWrite(9,myLife.flash(timer()));
-  //digitalWrite(9,HIGH);
+
+  if (Serial.available() > 0) {
+    val = Serial.read();
+  }
+
+  digitalWrite(9, myLife.flash(timer()));
+  
   hunger.update(timer());
   happiness.update(timer());
   ledWrite();
+
+  for (int i = 0; i < 4; i++){
+    if (buttons[0].changed()){
+      Serial.print(i);
+      Serial.print(",");
+      Serial.println(buttons[0].getState());
+    }
+  }
 }
 
 void ledWrite() {
@@ -62,17 +81,18 @@ void ledWrite() {
 }
 
 //handles those interrupts
-void buttonHandler3(){
+void buttonHandler3() {
   if (buttons[0].getState() == 1 ) {
-  hunger.increaseState(timer());    
+    hunger.increaseState(timer());
   }
   buttons[0].toggle();
+  make1stButtonSerialCall = true;
 }
 
-void buttonHandler1(){
-  if(buttons[1].getState() == 1 ){
+void buttonHandler1() {
+  if (buttons[1].getState() == 1 ) {
     happiness.decreaseState(timer());
-    } 
+  }
   buttons[1].toggle();
 }
 
@@ -90,3 +110,11 @@ ISR(TIMER1_OVF_vect)
 {
   timerOverflow++;
 }
+
+void establishContact() {
+  while (Serial.available() <= 0) {
+    Serial.println("A");   // send a capital A
+    delay(300);
+  }
+}
+
