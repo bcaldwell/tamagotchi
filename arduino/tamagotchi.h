@@ -6,9 +6,40 @@ struct RGB {
   byte b;
 };
 
+
+class life {
+  private:
+    
+    int lightOn = 200;
+    int addToCounter=0;
+    
+    unsigned long counter = 1000;
+    unsigned long prevTime = 0;
+  
+  public:
+    bool flash(unsigned long time) {
+
+      if ( counter > time - prevTime) { 
+        return LOW;
+      }
+      else if (counter + lightOn > time - prevTime) {
+        return HIGH;
+      }
+      else {
+        prevTime = time;
+        addToCounter++;
+        if (addToCounter == 5){
+            counter += 100;
+          }
+      }
+    }
+      
+};
+
 class state {
   private:
     int lastUpdate = 0;
+    int lastIncrease = 0;
     int updateTimes[25];
     int updateCount = 0;
     byte writeBits = 0b1111; //default is 15 in binary
@@ -33,11 +64,23 @@ class state {
           lastUpdate = time;
       }
     }
-    void increaseState(){
+    void increaseState(unsigned long time){
       if (writeBits < 0b1111) {
-        writeBits = writeBits << 1
+        if(time -lastIncrease > 1500){
+          writeBits = (writeBits << 1) +1;
+          lastIncrease = time;
+          //lastUpdate = time;
+          this->updateTime(time);
+          }
         }
     }
+  void decreaseState(unsigned long time){
+    if (writeBits < 0b1111) {
+        writeBits = writeBits >> 1;
+        lastUpdate = time;
+    }
+  }
+    
 };
 
 class button {
@@ -53,6 +96,9 @@ class button {
       this->update(!state);
     }
     boolean getState(boolean silent = false){
+      if (silent == true){
+        return state;
+      }
       changedState = silent;
       return state;
     }

@@ -11,6 +11,7 @@ volatile double timerOverflow = 0;  //tracks timer1 overflow count
 
 state hunger;
 state happiness;
+life myLife;
 //button array:
 //0:left
 //1:middle
@@ -42,10 +43,8 @@ void setup() {
 }
 
 void loop() {
-  
-  digitalWrite(9,HIGH);
- 
-  
+  digitalWrite(9,myLife.flash(timer()));
+  //digitalWrite(9,HIGH);
   hunger.update(timer());
   happiness.update(timer());
   ledWrite();
@@ -63,15 +62,17 @@ void ledWrite() {
 }
 
 //handles those interrupts
-void buttonHandler0(){
-  
-  
-  Serial.print("1st button pressed");
-
-  
+void buttonHandler3(){
+  if (buttons[0].getState() == 1 ) {
+  hunger.increaseState(timer());    
+  }
   buttons[0].toggle();
 }
+
 void buttonHandler1(){
+  if(buttons[1].getState() == 1 ){
+    happiness.decreaseState(timer());
+    } 
   buttons[1].toggle();
 }
 
