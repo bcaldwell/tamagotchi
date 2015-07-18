@@ -9,6 +9,8 @@ int dataPin = 6;
 
 volatile double timerOverflow = 0;  //tracks timer1 overflow count
 
+int val = 0;
+
 state hunger;
 state happiness;
 life myLife;
@@ -31,8 +33,8 @@ void setup() {
   pinMode(11, OUTPUT);
 
   //add interupts on pins 2 and 3
-  attachInterrupt(0, buttonHandler3, CHANGE); // interrupt 0 is mapped to pin 2 on the Uno
-  attachInterrupt(1, buttonHandler1, CHANGE); // interrupt 1 is mapped to pin 3 on the Uno
+  attachInterrupt(0, buttonHunger, CHANGE); // interrupt 0 is mapped to pin 2 on the Uno
+  attachInterrupt(1, buttonHappiness, CHANGE); // interrupt 1 is mapped to pin 3 on the Uno
 
   cli();  //enables interput blocking flag
   TCCR1A = 0;             // normal counting mode
@@ -45,8 +47,7 @@ void setup() {
   establishContact();
 }
 
-int val = 0;
-bool make1stButtonSerialCall = false;
+
 
 void loop() {
 
@@ -55,16 +56,15 @@ void loop() {
   }
 
   digitalWrite(9, myLife.flash(timer()));
-  
+
   hunger.update(timer());
   happiness.update(timer());
   ledWrite();
-
-  for (int i = 0; i < 4; i++){
-    if (buttons[0].changed()){
+  for (int i = 0; i < 4; i++) {
+    if (buttons[i].changed()) {
       Serial.print(i);
       Serial.print(",");
-      Serial.println(buttons[0].getState());
+      Serial.println(buttons[i].getState());
     }
   }
 }
@@ -81,16 +81,15 @@ void ledWrite() {
 }
 
 //handles those interrupts
-void buttonHandler3() {
-  if (buttons[0].getState() == 1 ) {
+void buttonHunger() {
+  if (buttons[0].getState(true) == 1 ) {
     hunger.increaseState(timer());
   }
   buttons[0].toggle();
-  make1stButtonSerialCall = true;
 }
 
-void buttonHandler1() {
-  if (buttons[1].getState() == 1 ) {
+void buttonHappiness() {
+  if (buttons[1].getState(true) == 1 ) {
     happiness.decreaseState(timer());
   }
   buttons[1].toggle();
@@ -98,10 +97,16 @@ void buttonHandler1() {
 
 //functions for millis()
 unsigned long timer () {
+  cli();  //enables interput blocking flag
+  unsigned long time = TCNT1;
+  sei();  //removes flag that blocks interputs
   return (TCNT1 + timerOverflow * 65536) / ( F_CPU / 1000L);
 }
 
 unsigned long timerSeconds () {
+  cli();  //enables interput blocking flag
+  unsigned long time = TCNT1;
+  sei();  //removes flag that blocks interputs
   return (TCNT1 + timerOverflow * 65536) / ( F_CPU);
 }
 

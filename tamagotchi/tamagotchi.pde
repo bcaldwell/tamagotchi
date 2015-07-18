@@ -2,11 +2,12 @@ import processing.serial.*;
 
 Serial myPort;
 
+//these are the images
 PImage bg;
 PImage normal;
 PImage steak;
 PImage angry;
-
+//variables
 int imageScale = 4;
 int ychange = 0;
 int xchange = 0;
@@ -14,7 +15,7 @@ boolean movingUp = true;
 boolean movingLeft = true;
 
 int eaten = 20;
-
+//speed variables
 int ychangeSpeed = 3;
 int xchangeSpeed = 4;
 int rotateSpeed = 5;
@@ -24,7 +25,7 @@ String mode = "move";
 String faceState = "normal";
 
 int rotateDegree = 0;
-
+// load images
 public void setup() {
   size (800, 800);
   bg = loadImage("../background.png");
@@ -39,7 +40,7 @@ public void setup() {
 
   //connect serial
   println (Serial.list());
-  myPort = new Serial(this, Serial.list()[Serial.list().length - 2], 9600);
+  myPort = new Serial(this, Serial.list()[Serial.list().length - 1], 9600);
   myPort.bufferUntil('\n');
 }
 
@@ -65,7 +66,7 @@ public void draw() {
     image(normal, 0, 0);
   }
 }
-
+//what to do when button is clicked
 void mouseClicked() {
   //  if (mode == "move") {
   //    mode = "eating";
@@ -76,7 +77,7 @@ void mouseClicked() {
     faceState = "angry";
   }
 }
-
+//rotates image
 void imgRotate () {
   rotateDegree += rotateSpeed;
   if (rotateDegree >= 360) {
@@ -84,7 +85,7 @@ void imgRotate () {
     rotateDegree = 0;
   }
 }
-
+//Move around the screen
 void imgMove () {
   //determine y position
   if (movingUp) {
@@ -110,7 +111,7 @@ void imgMove () {
     movingLeft = !movingLeft;
   }
 }
-
+//load steak image and fade it out
 void eating() {  
   image(steak.get(0, 0, steak.width, steak.height - eaten), 200, 200);
   eaten += eatSpeed;
@@ -152,10 +153,13 @@ void serialEvent( Serial myPort) {
       }
     } else { //if we've already established contact, keep getting and parsing data
       println(val);
-      button = int(val.substring(0));
-      state = int(val.substring(2));
+      button = int(val.substring(0,1));
+      state = int(val.substring(2,3));
+      println(button);
       if (button == 0 && state == 1){
          mode = "eating"; 
+      } else if (button == 1){
+        faceState = (state == 1? "angry": "normal");
       }
       
 //      myPort.clear();

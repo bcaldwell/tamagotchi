@@ -96,7 +96,7 @@ class button {
       this->update(!state);
     }
     boolean getState(boolean silent = false){
-      if (silent == true){
+      if (silent){
         return state;
       }
       changedState = silent;
