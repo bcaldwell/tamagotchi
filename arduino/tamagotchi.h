@@ -38,10 +38,10 @@ class life {
 
 class state {
   private:
-    int lastUpdate = 0;
-    int lastIncrease = 0;
-    int updateTimes[25];
-    int updateCount = 0;
+    unsigned long lastUpdate = 0;
+    unsigned long lastIncrease = 0;
+    unsigned long updateTimes[25];
+    unsigned long updateCount = 0;
     byte writeBits = 0b1111; //default is 15 in binary
     
   public:    
@@ -49,7 +49,7 @@ class state {
       lastUpdate = time;
       updateTimes[updateCount++] = time;
     }
-    int* getTimes () {
+    unsigned long * getTimes () {
       return updateTimes;
     }
     int getUpdate() {
@@ -59,7 +59,7 @@ class state {
       return writeBits;
     }
     void update (unsigned long time, int difference = 3000) {
-      if (time - lastUpdate > 3000) {
+      if (time - lastUpdate > difference) {
           writeBits = writeBits >> 1;
           lastUpdate = time;
       }
