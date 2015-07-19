@@ -2,6 +2,8 @@ import processing.serial.*;
 
 Serial myPort;
 
+boolean serialMode = false;
+
 //these are the images
 PImage bg;
 PImage normal;
@@ -21,8 +23,8 @@ int xchangeSpeed = 4;
 int rotateSpeed = 5;
 int eatSpeed = 3;
 
-String mode = "move";
-String faceState = "normal";
+String mode = "game";
+String faceState = "none";
 
 int rotateDegree = 0;
 // load images
@@ -39,9 +41,11 @@ public void setup() {
   imageMode(CENTER);
 
   //connect serial
-  println (Serial.list());
-  myPort = new Serial(this, Serial.list()[Serial.list().length - 1], 9600);
-  myPort.bufferUntil('\n');
+  if (serialMode) {
+    println (Serial.list());
+    myPort = new Serial(this, Serial.list()[Serial.list().length - 1], 9600);
+    myPort.bufferUntil('\n');
+  }
 }
 
 
@@ -52,17 +56,17 @@ public void draw() {
     imgMove();
   } else if (mode == "rotate") {
     imgRotate();
-  } else if (mode == "jumpGame") {
-    jumpingGame();
   } else if (mode == "eating") {
     eating();
+  } else if (mode == "game") {
+    game();
   }
 
   translate(width/2 - xchange, height/2 - ychange);
   rotate(rotateDegree*TWO_PI/360);
   if (faceState == "angry") {
     image(angry, 0, 0);
-  } else {
+  } else if (faceState == "normal"){
     image(normal, 0, 0);
   }
 }
@@ -122,13 +126,6 @@ void eating() {
   }
 }
 
-void jumpingGame() {
-  rectMode(CENTER);
-  noFill();
-  strokeWeight(20);
-  rect(0, 0, 200, 0);
-}
-
 String val = "";
 boolean firstContact = false;
 void serialEvent( Serial myPort) {
@@ -153,16 +150,16 @@ void serialEvent( Serial myPort) {
       }
     } else { //if we've already established contact, keep getting and parsing data
       println(val);
-      button = int(val.substring(0,1));
-      state = int(val.substring(2,3));
+      button = int(val.substring(0, 1));
+      state = int(val.substring(2, 3));
       println(button);
-      if (button == 0 && state == 1){
-         mode = "eating"; 
-      } else if (button == 1){
+      if (button == 0 && state == 1) {
+        mode = "eating";
+      } else if (button == 1) {
         faceState = (state == 1? "angry": "normal");
       }
-      
-//      myPort.clear();
+
+      //      myPort.clear();
     }
   }
 }
