@@ -44,6 +44,7 @@ void game () {
     }
     startTime = millis();
     gameInProcess = true;
+    lastEgg = 0;
   }
 }
 
@@ -51,7 +52,7 @@ void game () {
 //sort array of eggs by start time and the process them in order on button press
 
 class egg {
-  private float speed = 5; 
+  private float speed = 20; 
   private long ypos = round(-speed);
   private int xpos = width/2;
   private long dropTime;
@@ -94,17 +95,9 @@ class egg {
   }
 }
 
-void keyPressed() {
-  int pos = -1;
-  if (key == 'a') {
-    pos = 0;
-  } else if (key == 's') {
-    pos = 1;
-  } else if (key == 'd') {
-    pos = 2;
-  }
-  if (pos >= 0) {
-    if (lastEgg < eggs.length && !eggs[lastEgg++].check(pos)) {
+void buttonPressed(int button) {
+  if (button >= 0 && button <= 2) {
+    if (lastEgg < eggs.length && !eggs[lastEgg++].check(button)) {
       endGame();
     }
   }
@@ -112,9 +105,8 @@ void keyPressed() {
 
 
 void endGame () {
-  textSize(32);
-  text("Game over", 10, 30); 
-  //  mode = "move";
-  //  faceState = "normal";
+  mode = "move";
+  faceState = "normal";
+  gameInProcess = false;
 }
 

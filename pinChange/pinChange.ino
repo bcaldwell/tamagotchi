@@ -5,8 +5,8 @@ void setup()
 {
   cli(); // disables interrupts
   PCICR |= 0b00000101; // Enables Ports B and D Pin Change Interrupts
-  PCMSK0 |= 0b00000001; // PCINT0
-  PCMSK2 |= 0b00010000;
+  PCMSK0 |= 0b00000001; // PCINT0 -> Pin 8
+  PCMSK2 |= 0b00010000;//PCINT20 -> Pin 4
   sei(); // enables interrupts
 
   Serial.begin(9600);

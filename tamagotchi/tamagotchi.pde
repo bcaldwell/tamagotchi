@@ -2,7 +2,7 @@ import processing.serial.*;
 
 Serial myPort;
 
-boolean serialMode = false;
+boolean serialMode = true;
 
 //these are the images
 PImage bg;
@@ -23,8 +23,8 @@ int xchangeSpeed = 4;
 int rotateSpeed = 5;
 int eatSpeed = 3;
 
-String mode = "game";
-String faceState = "none";
+String mode = "move";
+String faceState = "normal";
 
 int rotateDegree = 0;
 // load images
@@ -43,7 +43,7 @@ public void setup() {
   //connect serial
   if (serialMode) {
     println (Serial.list());
-    myPort = new Serial(this, Serial.list()[Serial.list().length - 1], 9600);
+    myPort = new Serial(this, Serial.list()[Serial.list().length - 2], 9600);
     myPort.bufferUntil('\n');
   }
 }
@@ -66,7 +66,7 @@ public void draw() {
   rotate(rotateDegree*TWO_PI/360);
   if (faceState == "angry") {
     image(angry, 0, 0);
-  } else if (faceState == "normal"){
+  } else if (faceState == "normal") {
     image(normal, 0, 0);
   }
 }
@@ -139,27 +139,43 @@ void serialEvent( Serial myPort) {
     //trim whitespace and formatting characters (like carriage return)
     val = trim(val);
 
-    //look for our 'A' string to start the handshake
+    //look for our 'A' string to  start the handshake
     //if it's there, clear the buffer, and send a request for data
     if (!firstContact) {
       if (val.equals("A")) {
         myPort.clear();
         firstContact = true;
-        myPort.write("A");
+        myPort.write("a");
         println("contact");
       }
     } else { //if we've already established contact, keep getting and parsing data
       println(val);
-      button = int(val.substring(0, 1));
-      state = int(val.substring(2, 3));
-      println(button);
-      if (button == 0 && state == 1) {
-        mode = "eating";
-      } else if (button == 1) {
-        faceState = (state == 1? "angry": "normal");
+      try {
+        button = int(val.substring(0, 1));
+        state = int(val.substring(2, 3));
+        println(button);
+        if (mode != "game") {
+          if (button == 0 && state == 1) {
+            mode = "eating";
+          } else if (button == 1) {
+            faceState = (state == 1? "angry": "normal");
+          } else if (button == 2 && state == 1) {
+            mode ="game";
+            faceState = "none";
+          }
+          else if (button == 3 && state == 0){
+          mode = "rotate";
+          
+          }
+        } else {
+          if (state == 1) {
+            buttonPressed(button);
+          }
+        }
       }
-
-      //      myPort.clear();
+      catch(RuntimeException e) {
+        println(e);
+      }
     }
   }
 }
