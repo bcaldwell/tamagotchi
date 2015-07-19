@@ -7,6 +7,8 @@ int clockPin = 7;
 ////Pin connected to DS of 74HC595
 int dataPin = 6;
 
+unsigned long * times;
+
 boolean serialMode = true;
 
 boolean alive = true;
@@ -104,7 +106,15 @@ void loop() {
     Serial.println(aliveTime);
 
     String fedTime = "";
-    // fedTime = "You fed him at: ";
+     fedTime = "You fed him at: ";
+     Serial.print(fedTime);
+     times = hunger.getTimes();
+     for( int i = 0; i < 25; i++){
+      if(times[i] > 0){
+        Serial.print(times[i]/1000);
+      Serial.print("seconds ");
+      }
+     }
     // fedTime += hunger.getTimes();
     // fedTime += " seconds.";
     // Serial.print(hunger.getTimes());
