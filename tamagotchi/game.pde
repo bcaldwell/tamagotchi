@@ -81,8 +81,7 @@ class egg {
       ellipse(xpos, ypos, 60, 100);
     }
     if (ypos - 50> height - bottomDistance) {
-      mode = "move";
-      faceState = "normal";
+      endGame();
     }
     return true;
   }
@@ -105,9 +104,9 @@ void buttonPressed(int button) {
 
 
 void endGame () {
+  myPort.write('f');
   mode = "move";
   faceState = "normal";
   gameInProcess = false;
-  myPort.write(102);
 }
 
