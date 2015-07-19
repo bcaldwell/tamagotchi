@@ -27,7 +27,7 @@ class life {
     }
     bool flash(unsigned long time) {
 
-      if (time > 5*60*1000) {
+      if (time > 4*60*1000) {
         alive = false;
         return LOW;
       }
@@ -55,7 +55,7 @@ class state {
   private:
     unsigned long lastUpdate = 0;
     unsigned long lastIncrease = 0;
-    unsigned long updateTimes[25];
+    unsigned long updateTimes[50];
     unsigned long updateCount = 0;
     byte writeBits = 0b1111; //default is 15 in binary
     
@@ -73,7 +73,7 @@ class state {
     int getWriteBits(){
       return writeBits;
     }
-    bool update (unsigned long time, int difference = 3000) {
+    bool update (unsigned long time, int difference = 10000) {
       if (time - lastUpdate > difference) {
           writeBits = writeBits >> 1;
           lastUpdate = time;
@@ -86,7 +86,7 @@ class state {
     void increaseState(unsigned long time, bool override = false){
 
       if (writeBits < 0b1111) {
-        if(time -lastIncrease > 1500){
+        if(time -lastIncrease > 3000){
           writeBits = (writeBits << 1) +1;
           lastIncrease = time;
           this->updateTime(time);

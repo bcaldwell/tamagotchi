@@ -109,15 +109,12 @@ void loop() {
      fedTime = "You fed him at: ";
      Serial.print(fedTime);
      times = hunger.getTimes();
-     for( int i = 0; i < 25; i++){
+     for( int i = 0; i < 50; i++){
       if(times[i] > 0){
         Serial.print(times[i]/1000);
-      Serial.print("seconds ");
+      Serial.print(" ");
       }
      }
-    // fedTime += hunger.getTimes();
-    // fedTime += " seconds.";
-    // Serial.print(hunger.getTimes());
 
     while (true) {};
 
