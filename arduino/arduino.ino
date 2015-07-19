@@ -65,7 +65,13 @@ void loop() {
 
   if (Serial.available() > 0) {
     val = Serial.read();
+    Serial.println(val);
+    if (val == 'f'){
+      
+      inGame = false;
+      }
   }
+  
 
   digitalWrite(9, myLife.flash(timer()));
   if( inGame == false){
@@ -92,10 +98,10 @@ void loop() {
 
     unsigned long timeAlive = myLife.timeAlive(timer());
     String aliveTime = "";
-    aliveTime = "Time alive was: ";
+    aliveTime = "Time alive was:";
     aliveTime += timeAlive / 1000;
-    aliveTime += " seconds.";
-    Serial.print(aliveTime);
+  
+    Serial.println(aliveTime);
 
     String fedTime = "";
     // fedTime = "You fed him at: ";

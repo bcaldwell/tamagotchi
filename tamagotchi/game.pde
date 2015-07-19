@@ -108,5 +108,6 @@ void endGame () {
   mode = "move";
   faceState = "normal";
   gameInProcess = false;
+  myPort.write(102);
 }
 

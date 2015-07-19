@@ -2,7 +2,7 @@ import processing.serial.*;
 
 Serial myPort;
 
-boolean serialMode = false;
+boolean serialMode = true;
 
 //these are the images
 PImage bg;
@@ -151,7 +151,8 @@ void serialEvent( Serial myPort) {
     } else { //if we've already established contact, keep getting and parsing data
       println(val);
       try {
-        if (boolean(val.indexOf("Time alive was: "))) {
+        if ((val.indexOf("Time alive was:")) >= 0) {
+          println("hiiiii");
           aliveTime = float(val.substring(15));
           mode = "dead";
           faceState = "none";
@@ -176,6 +177,7 @@ void serialEvent( Serial myPort) {
             }
           }
         }
+        myPort.clear();
       }
       catch(RuntimeException e) {
         println(e);
