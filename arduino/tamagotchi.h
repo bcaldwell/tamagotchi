@@ -83,12 +83,16 @@ class state {
         }
         return true;
     }
-    void increaseState(unsigned long time){
+    void increaseState(unsigned long time, bool override = false){
+      Serial.println("reached increase state");
       if (writeBits < 0b1111) {
         if(time -lastIncrease > 1500){
           writeBits = (writeBits << 1) +1;
           lastIncrease = time;
           this->updateTime(time);
+          }
+          else if(override == true){
+            writeBits = (writeBits << 1) +1;
           }
         }
     }
