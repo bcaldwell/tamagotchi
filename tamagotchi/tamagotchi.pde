@@ -156,6 +156,10 @@ void serialEvent( Serial myPort) {
           aliveTime = float(val.substring(15));
           mode = "dead";
           faceState = "none";
+        } else if (val.indexOf("You fed him at:") >= 0) {
+          String vals = trim(val.substring(14));
+          feedTimes = int(split (vals, " "));
+          println(feedTimes);          
         } else {
 
           button = int(val.substring(0, 1));
