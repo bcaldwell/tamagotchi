@@ -13,8 +13,8 @@ void game () {
     stroke (#FF0000);
     line(0, height-bottomDistance, width, height-bottomDistance);
     strokeWeight(1);
-    stroke (255);
-  } else {    
+    stroke (0);
+  } else {   
     int[] dropTimes = new int[eggs.length];
 
     for (int i = 0; i < dropTimes.length; i++) {
@@ -51,9 +51,9 @@ void game () {
 //sort array of eggs by start time and the process them in order on button press
 
 class egg {
-  private long ypos = 0;
-  private int xpos = width/2;
   private float speed = 5; 
+  private long ypos = round(-speed);
+  private int xpos = width/2;
   private long dropTime;
   private boolean enabled = true;
   egg() {
@@ -68,33 +68,50 @@ class egg {
   void setDropTime(long time) {
     dropTime = time;
   }
-  void update (long startTime) {
+  boolean update (long startTime) {
     if (enabled && (millis() - startTime)/1000 > dropTime) {
       ypos += speed;
-      fill(255);
+      strokeWeight(0);
+      if (ypos + 50> height - bottomDistance) {
+        fill(255);
+      } else {
+        fill(0);
+      }
       ellipse(xpos, ypos, 60, 100);
     }
+    if (ypos - 50> height - bottomDistance) {
+      mode = "move";
+      faceState = "normal";
+    }
+    return true;
   }
   boolean check (int pos) {
     enabled = false;
-    return false;
+    if (ypos + 40 > height - bottomDistance || xpos != int(width/4)*(pos+1)) {
+      return false;
+    }
+    return true;
   }
 }
 
 void keyPressed() {
   int pos = -1;
-  if (key == 97) {
+  if (key == 'a') {
     pos = 0;
-  } else if (key == 115) {
+  } else if (key == 's') {
     pos = 1;
-  } else if (key == 100) {
+  } else if (key == 'd') {
     pos = 2;
   }
-  if (pos > 0) {
+  if (pos >= 0) {
     if (!eggs[lastEgg++].check(pos)) {
-      mode = "move";
-      faceState = "normal";
+      endGame();
     }
   }
+}
+
+void endGame () {
+  mode = "move";
+  faceState = "normal";
 }
 
