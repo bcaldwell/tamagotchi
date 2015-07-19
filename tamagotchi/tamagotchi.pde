@@ -2,7 +2,7 @@ import processing.serial.*;
 
 Serial myPort;
 
-boolean serialMode = true;
+boolean serialMode = false;
 
 //these are the images
 PImage bg;
@@ -27,6 +27,9 @@ String mode = "move";
 String faceState = "normal";
 
 int rotateDegree = 0;
+
+float aliveTime = 0;
+int[] feedTimes = new int[50];
 // load images
 public void setup() {
   size (800, 800);
@@ -51,7 +54,6 @@ public void setup() {
 
 public void draw() {  
   background(bg); 
-
   if (mode == "move") {
     imgMove();
   } else if (mode == "rotate") {
@@ -60,6 +62,8 @@ public void draw() {
     eating();
   } else if (mode == "game") {
     game();
+  } else if (mode == "dead") {
+    dead();
   }
 
   translate(width/2 - xchange, height/2 - ychange);
@@ -70,17 +74,13 @@ public void draw() {
     image(normal, 0, 0);
   }
 }
-//what to do when button is clicked
-void mouseClicked() {
-  //  if (mode == "move") {
-  //    mode = "eating";
-  //  }
-  if (faceState == "angry") {
-    faceState = "normal";
-  } else if (faceState == "normal") {
-    faceState = "angry";
-  }
+
+void dead() {
+  textSize(50);
+  fill(0);
+  text("Time alive was: " + aliveTime + " seconds", 50, 50);
 }
+
 //rotates image
 void imgRotate () {
   rotateDegree += rotateSpeed;
@@ -151,25 +151,29 @@ void serialEvent( Serial myPort) {
     } else { //if we've already established contact, keep getting and parsing data
       println(val);
       try {
-        button = int(val.substring(0, 1));
-        state = int(val.substring(2, 3));
-        println(button);
-        if (mode != "game") {
-          if (button == 0 && state == 1) {
-            mode = "eating";
-          } else if (button == 1) {
-            faceState = (state == 1? "angry": "normal");
-          } else if (button == 2 && state == 1) {
-            mode ="game";
-            faceState = "none";
-          }
-          else if (button == 3 && state == 0){
-          mode = "rotate";
-          
-          }
+        if (boolean(val.indexOf("Time alive was: "))) {
+          aliveTime = float(val.substring(15));
+          mode = "dead";
+          faceState = "none";
         } else {
-          if (state == 1) {
-            buttonPressed(button);
+
+          button = int(val.substring(0, 1));
+          state = int(val.substring(2, 3));
+          if (mode != "game") {
+            if (button == 0 && state == 1) {
+              mode = "eating";
+            } else if (button == 1) {
+              faceState = (state == 1? "angry": "normal");
+            } else if (button == 2 && state == 1) {
+              mode ="game";
+              faceState = "none";
+            } else if (button == 3 && state == 0) {
+              mode = "rotate";
+            }
+          } else {
+            if (state == 1) {
+              buttonPressed(button);
+            }
           }
         }
       }
