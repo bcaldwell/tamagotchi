@@ -85,8 +85,8 @@ class state {
 
 class button {
   private:
-    boolean state = 0;
-    boolean changedState = false;
+    volatile boolean state = 0;
+    volatile boolean changedState = false;
   public:
     void update(boolean stateIn){
       state = stateIn;

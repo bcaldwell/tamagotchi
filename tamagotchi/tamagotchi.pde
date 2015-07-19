@@ -77,7 +77,7 @@ void mouseClicked() {
   //  }
   if (faceState == "angry") {
     faceState = "normal";
-  } else {
+  } else if (faceState == "normal") {
     faceState = "angry";
   }
 }

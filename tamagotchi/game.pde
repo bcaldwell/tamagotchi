@@ -104,14 +104,17 @@ void keyPressed() {
     pos = 2;
   }
   if (pos >= 0) {
-    if (!eggs[lastEgg++].check(pos)) {
+    if (lastEgg < eggs.length && !eggs[lastEgg++].check(pos)) {
       endGame();
     }
   }
 }
 
+
 void endGame () {
-  mode = "move";
-  faceState = "normal";
+  textSize(32);
+  text("Game over", 10, 30); 
+  //  mode = "move";
+  //  faceState = "normal";
 }
 
