@@ -67,17 +67,18 @@ void loop() {
 
   if (Serial.available() > 0) {
     val = Serial.read();
-    Serial.println(val);
-    if (val == 'f'){
-      
+    if (val == 'f') {
       inGame = false;
-      }
+    
+    }
   }
-  
+
+
 
   digitalWrite(9, myLife.flash(timer()));
-  if( inGame == false){
-  alive = hunger.update(timer()) && happiness.update(timer()) && myLife.isAlive();}
+  if ( inGame == false) {
+    alive = hunger.update(timer()) && happiness.update(timer()) && myLife.isAlive();
+  }
 
   ledWrite();
   for (int i = 0; i < 4; i++) {
@@ -102,19 +103,20 @@ void loop() {
     String aliveTime = "";
     aliveTime = "Time alive was:";
     aliveTime += timeAlive / 1000;
-  
+
     Serial.println(aliveTime);
 
     String fedTime = "";
-     fedTime = "You fed him at: ";
-     Serial.println(fedTime);
-     times = hunger.getTimes();
-     for( int i = 0; i < 50; i++){
-      if(times[i] > 0){
-        Serial.println(times[i]/1000);
-      Serial.println(" ");
+    fedTime = "You fed him at: ";
+
+    times = hunger.getTimes();
+    for ( int i = 0; i < 50; i++) {
+      if (times[i] > 0) {
+        fedTime += times[i] / 1000;
+        fedTime += " ";
       }
-     }
+    }
+    Serial.println(fedTime);
 
     while (true) {};
 
@@ -171,8 +173,10 @@ ISR(TIMER1_OVF_vect)
 ISR(PCINT0_vect)
 {
   happiness.increaseState(timer(), true);
-  buttons[2].toggle();
-  inGame = true;
+  buttons[2].toggle();  
+  if(inGame == false) {
+    inGame = true;
+  }
 }
 
 //PORT D -> masked to pin 4
