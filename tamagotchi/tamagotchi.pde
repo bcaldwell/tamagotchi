@@ -29,7 +29,7 @@ String faceState = "normal";
 int rotateDegree = 0;
 
 float aliveTime = 0;
-int[] feedTimes = new int[50];
+String feedTimes = "";
 // load images
 public void setup() {
   size (800, 800);
@@ -79,6 +79,7 @@ void dead() {
   textSize(50);
   fill(0);
   text("Time alive was: " + aliveTime + " seconds", 50, 50);
+  text(feedTimes, 50, 250, width - 50, height);
 }
 
 //rotates image
@@ -152,14 +153,14 @@ void serialEvent( Serial myPort) {
       println(val);
       try {
         if ((val.indexOf("Time alive was:")) >= 0) {
-          println("hiiiii");
           aliveTime = float(val.substring(15));
           mode = "dead";
           faceState = "none";
         } else if (val.indexOf("You fed him at:") >= 0) {
-          String vals = trim(val.substring(14));
-          feedTimes = int(split (vals, " "));
-          println(feedTimes);          
+          feedTimes = val;
+          //          String vals = trim(val.substring(15));
+          //          feedTimes = int(split (vals, " "));
+          //          println(feedTimes);
         } else {
 
           button = int(val.substring(0, 1));

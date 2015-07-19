@@ -104,9 +104,16 @@ void buttonPressed(int button) {
 
 
 void endGame () {
-  myPort.write('f');
   mode = "move";
   faceState = "normal";
   gameInProcess = false;
+  delay(200);
+  myPort.write('f');
+}
+
+void delay(int delay)
+{
+  int time = millis();
+  while (millis () - time <= delay);
 }
 
