@@ -102,7 +102,7 @@ void buttonPressed(int button) {
   }
 }
 
-
+//endgame logic to return buttons to normal state
 void endGame () {
   mode = "move";
   faceState = "normal";
@@ -110,7 +110,7 @@ void endGame () {
   delay(200);
   myPort.write('f');
 }
-
+//Delay so that the game will not glitch if lost using the 'start game' button
 void delay(int delay)
 {
   int time = millis();

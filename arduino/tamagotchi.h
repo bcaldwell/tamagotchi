@@ -6,7 +6,7 @@ struct RGB {
   byte b;
 };
 
-
+//Class for dealing with lifespan
 class life {
   private:
     bool alive = true;
@@ -17,16 +17,16 @@ class life {
     unsigned long prevTime = 0;
   
   public:
-
+// complicated function to determine alive time
   unsigned long timeAlive(unsigned long time){
       return time;
     } 
-  
+  //check if alive and determine light speed for flashing heartbeat
   bool isAlive(){
     return alive;
     }
     bool flash(unsigned long time) {
-
+    //Death after 4mins no matter what 
       if (time > 4*60*1000) {
         alive = false;
         return LOW;
@@ -39,6 +39,7 @@ class life {
         return HIGH;
       }
       else {
+        //Make light slowly decrease speed
         prevTime = time;
         addToCounter++;
         if (addToCounter == 5){
@@ -83,6 +84,7 @@ class state {
         }
         return true;
     }
+    //Function for when increases are needed based on time events 
     void increaseState(unsigned long time, bool override = false){
 
       if (writeBits < 0b1111) {
@@ -96,6 +98,7 @@ class state {
           }
         }
     }
+    //Function for when decreases are needed based on time events
   void decreaseState(unsigned long time){
     if (writeBits < 0b1111) {
         writeBits = writeBits >> 1;

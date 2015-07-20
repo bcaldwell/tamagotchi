@@ -10,14 +10,15 @@ int dataPin = 6;
 unsigned long * times;
 
 boolean serialMode = true;
-
+//variables for tracking state of system
 boolean alive = true;
+//volatile because it is used in the interrupt
 volatile boolean inGame = false;
 
 volatile double timerOverflow = 0;  //tracks timer1 overflow count
 
 int val = 0;
-
+//declerations
 state hunger;
 state happiness;
 life myLife;
@@ -64,7 +65,7 @@ void setup() {
 
 
 void loop() {
-
+  // checks for available reading from processing
   if (Serial.available() > 0) {
     val = Serial.read();
     if (val == 'f') {
@@ -74,7 +75,7 @@ void loop() {
   }
 
 
-
+  // Keeps track of the flahsing alive lights and determines death procedure
   digitalWrite(9, myLife.flash(timer()));
   if ( inGame == false) {
     alive = hunger.update(timer()) && happiness.update(timer()) && myLife.isAlive();
@@ -98,14 +99,14 @@ void loop() {
 
     // alive meter
     digitalWrite(9, LOW);
-
+    //Calculate and output the amount of time alive
     unsigned long timeAlive = myLife.timeAlive(timer());
     String aliveTime = "";
     aliveTime = "Time alive was:";
     aliveTime += timeAlive / 1000;
 
     Serial.println(aliveTime);
-
+    //Calculate and output the times the tamogochi was fed at
     String fedTime = "";
     fedTime = "You fed him at: ";
 
@@ -135,13 +136,14 @@ void ledWrite() {
 }
 
 //handles those interrupts
+//keps track of hunger button and logic
 void buttonHunger() {
   if (buttons[0].getState(true) == 1 && inGame == false ) {
     hunger.increaseState(timer());
   }
   buttons[0].toggle();
 }
-
+//Keeps track of the happiness button and logic
 void buttonHappiness() {
   if (buttons[1].getState(true) == 1 && inGame == false ) {
     happiness.decreaseState(timer());
@@ -170,6 +172,7 @@ ISR(TIMER1_OVF_vect)
   timerOverflow++;
 }
 // PORT B -> masked to pin 8
+// Button 3 to begin game mode
 ISR(PCINT0_vect)
 {
   happiness.increaseState(timer(), true);
@@ -180,6 +183,7 @@ ISR(PCINT0_vect)
 }
 
 //PORT D -> masked to pin 4
+//Distance sensor setup to increase happiness
 ISR(PCINT2_vect)
 {
   buttons[3].toggle();
@@ -189,7 +193,7 @@ ISR(PCINT2_vect)
 
 }
 
-
+//checks for contact with processing to begin sending data
 void establishContact() {
   while (Serial.available() <= 0) {
     Serial.println("A");   // send a capital A

@@ -43,7 +43,7 @@ public void setup() {
   steak.resize(steak.width/2, steak.width/2);
   imageMode(CENTER);
 
-  //connect serial
+  //connect serial this is what connects arduino
   if (serialMode) {
     println (Serial.list());
     myPort = new Serial(this, Serial.list()[Serial.list().length - 1], 9600);
@@ -53,6 +53,7 @@ public void setup() {
 
 
 public void draw() {  
+  //decide what the action will be
   background(bg); 
   if (mode == "move") {
     imgMove();
@@ -162,7 +163,7 @@ void serialEvent( Serial myPort) {
           //          feedTimes = int(split (vals, " "));
           //          println(feedTimes);
         } else {
-
+    //Logic for what buttons do to the tamogochi and sets state and modes
           button = int(val.substring(0, 1));
           state = int(val.substring(2, 3));
           if (mode != "game") {
