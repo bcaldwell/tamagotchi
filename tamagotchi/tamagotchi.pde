@@ -46,7 +46,7 @@ public void setup() {
   //connect serial this is what connects arduino
   if (serialMode) {
     println (Serial.list());
-    myPort = new Serial(this, Serial.list()[Serial.list().length - 1], 9600);
+    myPort = new Serial(this, Serial.list()[Serial.list().length - 2], 9600);
     myPort.bufferUntil('\n');
   }
 }
